@@ -86,7 +86,7 @@ async def get_output_images(request: Request):
         images = []
         for root, dirs, files in os.walk(folder):
             for file in files:
-                if file.endswith(".png") or file.endswith(".jpg"):
+                if file.endswith((".png", ".jpg", ".jpeg", ".webp", ".gif")):
                     image = {"name": file, "full_path": os.path.join(root, file)}
                     images.append(image)
         return success_resp(images=images)
@@ -130,14 +130,17 @@ async def delete_output_images(request: Request):
         print(f"Error during deletion: {str(e)}")
         return error_resp(500, str(e))
 
+
 @routes.delete("/comfyapi/v1/input-images/{filename}")
 async def delete_input_images(request: Request):
     try:
         filename = request.match_info.get("filename")
         if filename is None:
             return error_resp(400, "filename is required")
-        if filename[0] == '/' or '..' in filename:
+
+        if filename[0] == "/" or ".." in filename:
             return error_resp(400, "invalid filename")
+
         is_temp = request.rel_url.query.get("temp", "false") == "true"
         annotated_file = f"{filename} [{'temp' if is_temp else 'input'}]"
         if not folder_paths.exists_annotated_filepath(annotated_file):
@@ -147,6 +150,7 @@ async def delete_input_images(request: Request):
         return success_resp()
     except Exception as e:
         return error_resp(500, str(e))
+
 
 @routes.post("/comfyapi/v1/pnginfo")
 async def get_png_info(request: Request):
