@@ -125,6 +125,14 @@ async def delete_output_images(request: Request):
 
         os.remove(file_path)
         print(f"Successfully deleted file: {file_path}")
+
+        # Check if the subdir is empty after deletion, if so, remove it
+        if subfolder:
+            subfolder_path = os.path.join(base_dir, subfolder)
+            if os.path.isdir(subfolder_path) and not os.listdir(subfolder_path):
+                os.rmdir(subfolder_path)
+                print(f"Removed empty subfolder: {subfolder_path}")
+        
         return success_resp()
     except Exception as e:
         print(f"Error during deletion: {str(e)}")
@@ -161,6 +169,14 @@ async def delete_input_images(request: Request):
 
         os.remove(file_path)
         print(f"Successfully deleted file: {file_path}")
+
+        # Check if the subdir is empty after deletion, if so, remove it
+        if subfolder:
+            subfolder_path = os.path.join(base_dir, subfolder)
+            if os.path.isdir(subfolder_path) and not os.listdir(subfolder_path):
+                os.rmdir(subfolder_path)
+                print(f"Removed empty subfolder: {subfolder_path}")
+
         return success_resp()
     except Exception as e:
         print(f"Error during deletion: {str(e)}")
